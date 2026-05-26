@@ -6,6 +6,7 @@ from pathlib import Path
 import joblib
 import pandas as pd
 
+from src.features import add_gotham_features
 from src.data import align_test_features, load_csv
 from src.utils import ensure_dir, read_json
 
@@ -107,14 +108,15 @@ def main() -> None:
     model = joblib.load(args.model_path)
 
     print(f"[Gotham] Loading test data: {args.test_path}")
-    test_df = load_csv(args.test_path)
-    X_test = align_test_features(test_df, feature_columns)
+    test_df_raw = load_csv(args.test_path)
+    test_df_features = add_gotham_features(test_df_raw)
+    X_test = align_test_features(test_df_features, feature_columns)
 
-    print(f"[Gotham] Predicting {len(test_df):,} rows...")
+    print(f"[Gotham] Predicting {len(test_df_raw):,} rows...")
     predictions = model.predict(X_test)
 
     submission = build_submission(
-        test_df=test_df,
+        test_df=test_df_raw,
         predictions=predictions,
         target_column=target_column,
         output_column=output_column,

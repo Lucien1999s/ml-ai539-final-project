@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score, train_test_split
 
+from src.features import add_gotham_features
 from src.data import build_data_spec, build_preprocessor, load_csv, split_xy
 from src.metrics import get_cv_scoring, get_human_score_name, score_sort_note
 from src.models import build_pipeline, get_candidate_models
@@ -78,6 +79,7 @@ def main() -> None:
 
     print(f"[Gotham] Loading train data: {args.train_path}")
     df = load_csv(args.train_path)
+    df = add_gotham_features(df)
 
     spec = build_data_spec(df, target=args.target, task_type=args.task_type)
     X, y = split_xy(df, spec)

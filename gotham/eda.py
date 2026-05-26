@@ -6,6 +6,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from src.features import add_gotham_features
 from src.data import build_data_spec, load_csv
 from src.utils import ensure_dir, save_json
 
@@ -100,6 +101,7 @@ def main() -> None:
 
     print(f"[Gotham EDA] Loading: {args.train_path}")
     df = load_csv(args.train_path)
+    df = add_gotham_features(df)
     df_sample = maybe_sample(df, args.max_rows)
 
     spec = build_data_spec(df_sample, target=args.target, task_type=args.task_type)
