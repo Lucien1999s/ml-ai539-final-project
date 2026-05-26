@@ -16,6 +16,9 @@ __pycache__/
 venv/
 env/
 
+# Conda
+.conda/
+
 # Jupyter
 .ipynb_checkpoints/
 
@@ -28,7 +31,8 @@ data/
 *.pkl
 *.pickle
 
-# Model checkpoints / weights
+# Trained models / artifacts
+*.joblib
 *.pt
 *.pth
 *.ckpt
