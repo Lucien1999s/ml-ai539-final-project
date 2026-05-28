@@ -52,11 +52,14 @@ def _try_add_xgboost(models: dict, task_type: str) -> None:
 
             models["xgboost"] = {
                 "model": XGBRegressor(
-                    n_estimators=800,
-                    learning_rate=0.04,
-                    max_depth=8,
-                    subsample=0.9,
-                    colsample_bytree=0.9,
+                    n_estimators=1200,
+                    learning_rate=0.03,
+                    max_depth=10,
+                    subsample=0.85,
+                    colsample_bytree=0.85,
+                    min_child_weight=5,
+                    reg_alpha=0.1,
+                    reg_lambda=2.0,
                     objective="reg:squarederror",
                     random_state=42,
                     n_jobs=-1,
