@@ -6,53 +6,56 @@ This folder contains the modeling pipeline for the Gotham Cabs prediction task i
 
 Gotham Cabs is a taxi trip duration prediction task. Given pickup time, passenger count, pickup location, and dropoff location, the goal is to predict the trip duration.
 
-The target variable is:
+Target variable:
 
-```text
-duration
-```
+    duration
 
-The input features in the raw training data are:
+Raw training columns:
 
-```text
-pickup_datetime
-NumberOfPassengers
-pickup_x
-pickup_y
-dropoff_x
-dropoff_y
-```
+    pickup_datetime
+    NumberOfPassengers
+    duration
+    pickup_x
+    pickup_y
+    dropoff_x
+    dropoff_y
+
+Raw test columns:
+
+    pickup_datetime
+    NumberOfPassengers
+    pickup_x
+    pickup_y
+    dropoff_x
+    dropoff_y
 
 ## Local Data Layout
 
 Data files should be stored locally under:
 
-```text
-data/gotham/
-├── Train.csv
-├── TestFileTemplate.csv
-└── OfficialTest.csv
-```
+    data/gotham/
+    ├── Train.csv
+    ├── TestFileTemplate.csv
+    └── OfficialTest.csv
 
-The `data/` directory is not tracked by Git.
+The data/ directory is not tracked by Git.
 
 ## Files
 
-```text
-gotham/
-├── eda.py
-├── train.py
-├── validate.py
-├── tune_xgboost.py
-├── predict.py
-└── src/
-    ├── __init__.py
-    ├── data.py
-    ├── features.py
-    ├── metrics.py
-    ├── models.py
-    └── utils.py
-```
+    gotham/
+    ├── ablation.py
+    ├── eda.py
+    ├── predict.py
+    ├── train.py
+    ├── tune_xgboost.py
+    ├── validate.py
+    └── src/
+        ├── __init__.py
+        ├── data.py
+        ├── features.py
+        ├── metrics.py
+        ├── models.py
+        └── utils.py
 
 ## Feature Engineering
 
@@ -64,127 +67,123 @@ The pipeline derives additional features from the raw input columns:
 - Spatial features: average route location, pickup/dropoff distance from origin, pickup/dropoff grid zones, route-zone hash.
 - Passenger features: clipped passenger count and abnormal passenger-count flag.
 
+## Setup
+
+Install dependencies from the repository root:
+
+    pip install -r requirements.txt
+
 ## Run EDA
 
-```bash
-python gotham/eda.py \
-  --train-path data/gotham/Train.csv \
-  --target duration \
-  --task-type regression
-```
+    python gotham/eda.py \
+      --train-path data/gotham/Train.csv \
+      --target duration \
+      --task-type regression
 
 EDA outputs are saved under:
 
-```text
-gotham/outputs/eda/
-```
+    gotham/outputs/eda/
 
-## Validate Models
+## Validate a Candidate Model
 
-Run holdout validation for a candidate model:
+Run holdout validation for a selected model:
 
-```bash
-python gotham/validate.py \
-  --train-path data/gotham/Train.csv \
-  --target duration \
-  --task-type regression \
-  --model xgboost \
-  --max-train-rows 300000
-```
+    python gotham/validate.py \
+      --train-path data/gotham/Train.csv \
+      --target duration \
+      --task-type regression \
+      --model xgboost \
+      --max-train-rows 300000
+
+Supported regression model names:
+
+    dummy_mean
+    ridge
+    random_forest
+    extra_trees
+    lightgbm
+    xgboost
 
 ## Tune XGBoost
 
-```bash
-python gotham/tune_xgboost.py \
-  --train-path data/gotham/Train.csv \
-  --target duration \
-  --task-type regression \
-  --max-train-rows 300000
-```
+    python gotham/tune_xgboost.py \
+      --train-path data/gotham/Train.csv \
+      --target duration \
+      --task-type regression \
+      --max-train-rows 300000
 
-The best tuned model configuration was:
+Tuning outputs are saved under:
 
-```text
-XGBoostRegressor
-n_estimators = 1200
-learning_rate = 0.03
-max_depth = 10
-subsample = 0.85
-colsample_bytree = 0.85
-min_child_weight = 5
-reg_alpha = 0.1
-reg_lambda = 2.0
-tree_method = hist
-```
+    gotham/outputs/tuning/
 
-Validation performance of the best tuned XGBoost model:
+## Run Feature Ablation
 
-```text
-RMSE = 224.36 seconds
-MAE  = 140.51 seconds
-R²   = 0.8330
-```
+    python gotham/ablation.py \
+      --train-path data/gotham/Train.csv \
+      --target duration \
+      --task-type regression \
+      --model xgboost \
+      --max-train-rows 300000 \
+      --output-dir gotham/outputs/ablation
+
+Ablation outputs are saved under:
+
+    gotham/outputs/ablation/
 
 ## Train Final Model
 
-The final model is trained on the full `Train.csv` dataset.
+The final model is trained on the full Train.csv dataset after model comparison and tuning.
 
-```bash
-python gotham/train.py \
-  --train-path data/gotham/Train.csv \
-  --target duration \
-  --task-type regression \
-  --sample-frac 0.10 \
-  --max-sample-rows 100000 \
-  --cv 3 \
-  --final-model xgboost
-```
+    python gotham/train.py \
+      --train-path data/gotham/Train.csv \
+      --target duration \
+      --task-type regression \
+      --sample-frac 0.10 \
+      --max-sample-rows 100000 \
+      --cv 3 \
+      --final-model xgboost
 
-Outputs:
+Training outputs are saved under:
 
-```text
-gotham/outputs/
-├── leaderboard.csv
-├── metadata.json
-└── model.joblib
-```
+    gotham/outputs/
+    ├── leaderboard.csv
+    ├── metadata.json
+    └── model.joblib
 
 ## Predict Official Test File
 
 When the official test file is released, place it under:
 
-```text
-data/gotham/OfficialTest.csv
-```
+    data/gotham/OfficialTest.csv
 
 Then run:
 
-```bash
-python gotham/predict.py \
-  --test-path data/gotham/OfficialTest.csv \
-  --prediction-column duration \
-  --keep-test-columns \
-  --output-path submissions/gotham_predictions.csv
-```
+    python gotham/predict.py \
+      --test-path data/gotham/OfficialTest.csv \
+      --prediction-column duration \
+      --keep-test-columns \
+      --output-path submissions/gotham_predictions.csv
 
 ## Check Prediction File
 
-```bash
-python - <<'PY'
-import pandas as pd
+Before submission, inspect the output CSV:
 
-df = pd.read_csv("submissions/gotham_predictions.csv")
-print(df.shape)
-print(df.head())
-print(df["duration"].describe())
-print("Negative predictions:", (df["duration"] < 0).sum())
-print("Missing predictions:", df["duration"].isna().sum())
-PY
-```
+    python - <<'PY'
+    import pandas as pd
+
+    df = pd.read_csv("submissions/gotham_predictions.csv")
+    print(df.shape)
+    print(df.head())
+    print(df["duration"].describe())
+    print("Negative predictions:", (df["duration"] < 0).sum())
+    print("Missing predictions:", df["duration"].isna().sum())
+    PY
+
+The prediction file should contain the original test columns plus the predicted duration column.
 
 ## Notes
 
-- Model comparison is performed on a subset of the data for speed.
-- The final competition model is trained on the full training dataset.
-- The prediction script automatically applies the same feature engineering to the official test file.
-- Always inspect the output CSV before submitting.
+- Model comparison can be run on a subset of the data for speed.
+- The final competition model should be trained on the full training dataset.
+- The prediction script applies the same feature engineering used during training.
+- Generated outputs, local data files, model files, and prediction CSV files are not tracked by Git.
