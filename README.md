@@ -1,43 +1,41 @@
 # AI 539 Final Project
 
-This repository contains our final project code and materials for AI 539: Machine Learning for Non-AI Majors.
+This repository contains the codebase for the AI 539 final project.
 
-The final project includes two prediction tasks: Gotham Cabs and Botanist. Each task has its own data processing, model training, evaluation, and prediction pipeline. The goal is to compare multiple machine learning methods, select strong final models, and generate prediction files for the competition test sets.
+The project includes two prediction tasks:
 
-## Repository Structure
+- Gotham Cabs: taxi trip duration prediction using tabular data.
+- Botanist: image classification task.
 
-```text
-.
-├── gotham/
-│   ├── train.py
-│   ├── predict.py
-│   ├── notebooks/
-│   ├── outputs/
-│   └── src/
-├── botanist/
-│   ├── train.py
-│   ├── predict.py
-│   ├── notebooks/
-│   ├── outputs/
-│   └── src/
-├── submissions/
-├── README.md
-└── requirements.txt
-````
+Each task is organized in its own folder and can be developed independently.
 
-## Task 1: Gotham Cabs
+## Project Structure
 
-TODO: Add problem description, dataset summary, model candidates, validation setup, and final prediction method.
+    .
+    ├── gotham/
+    ├── botanist/
+    ├── submissions/
+    ├── README.md
+    └── requirements.txt
 
-## Task 2: Botanist
+## Gotham Cabs
 
-TODO: Add problem description, dataset summary, model candidates, validation setup, and final prediction method.
+The Gotham Cabs pipeline is implemented under:
 
-## How to Run
+    gotham/
 
-TODO: Add setup instructions and commands for training and prediction.
+For setup and usage instructions, see:
+
+    gotham/README.md
+
+## Botanist
+
+The Botanist pipeline is organized under:
+
+    botanist/
+
+Its implementation will be completed separately.
 
 ## Notes
 
-Large data files, model checkpoints, and generated outputs are not tracked in Git. Please place local datasets under the `data/` directory.
-
+Local data files, generated outputs, model checkpoints, and prediction CSV files are not tracked by Git.
