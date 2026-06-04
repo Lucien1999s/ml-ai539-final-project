@@ -34,6 +34,10 @@ The Botanist pipeline is organized under:
 
     botanist/
 
+For setup and usage instructions, see:
+
+    botanist/README.md
+
 Its implementation will be completed separately.
 
 ## Notes
